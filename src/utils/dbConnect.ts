@@ -1,8 +1,8 @@
 import { connect as _connect } from "mongoose";
 
-type mongoCT = string | undefined;
 
-async function connect(mongoUri: mongoCT) {
+
+async function connect(mongoUri: any) {
   try {
     await _connect(mongoUri, {
       useNewUrlParser: true,
