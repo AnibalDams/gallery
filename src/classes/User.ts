@@ -29,82 +29,91 @@ class UserClass {
     }
 
     async save(res: Response) {
-        const {
-            firstName,
-            lastName,
-            email,
-            genre,
-            username,
-            password,
-        } = this;
+        try {
+            const {
+                firstName,
+                lastName,
+                email,
+                genre,
+                username,
+                password,
+            } = this;
 
-        const EncryptedPassword = Encrypt(password, process.env.ENCRYPT_KEY);
+            const EncryptedPassword = Encrypt(password, process.env.ENCRYPT_KEY);
 
 
-        const user = new User({
-            firstName: firstName,
-            lastName: lastName,
-            email: email.toLowerCase(),
-            genre: genre,
-            username: username,
-            avatar:
-                genre === "Male"
-                    ? "https://res.cloudinary.com/dfj3oghor/image/upload/v1619988853/avatarDefaultMale_zgjlsw.jpg"
-                    : "https://res.cloudinary.com/dfj3oghor/image/upload/v1619988848/avatarDefaultFemale_feyd97.jpg",
-            password: EncryptedPassword,
-        });
+            const user = new User({
+                firstName: firstName,
+                lastName: lastName,
+                email: email.toLowerCase(),
+                genre: genre,
+                username: username,
+                avatar:
+                    genre === "Male"
+                        ? "https://res.cloudinary.com/dfj3oghor/image/upload/v1619988853/avatarDefaultMale_zgjlsw.jpg"
+                        : "https://res.cloudinary.com/dfj3oghor/image/upload/v1619988848/avatarDefaultFemale_feyd97.jpg",
+                password: EncryptedPassword,
+            });
 
-        const usernameFind = await User.find({
-            username: this.username,
-        });
-        const emailFind = await User.find({
-            email: this.email,
-        });
-        if (emailFind.length > 0) {
-            res.json({ message: "Email already in use" });
-        } else if (usernameFind.length > 0) {
-            res.json({ message: "Username already in use" });
-        } else {
-            await user.save();
-            res.json({ message: "user Saved", data: user });
+            const usernameFind = await User.find({
+                username: this.username,
+            });
+            const emailFind = await User.find({
+                email: this.email,
+            });
+            if (emailFind.length > 0) {
+                res.json({ message: "Email already in use" });
+            } else if (usernameFind.length > 0) {
+                res.json({ message: "Username already in use" });
+            } else {
+                await user.save();
+                res.json({ message: "user Saved", data: user });
+            }
+        } catch (e) {
+            console.error(e);
+            res.json({ message: "an error was occurred" });
         }
     }
 
     async login(res: Response) {
-        const { email, password } = this;
-        const user = await User.findOne({
-            email: email.toLowerCase(),
-        });
+        try {
+            const { email, password } = this;
+            const user = await User.findOne({
+                email: email.toLowerCase(),
+            });
 
-        if (user) {
+            if (user) {
 
-            const validatePassword: boolean = DescryptAndCompare(user.password, password, process.env.ENCRYPT_KEY);
-            if (validatePassword === false) {
-                console.log(validatePassword);
-                res.json({ message: "invalid password" });
+                const validatePassword: boolean = DescryptAndCompare(user.password, password, process.env.ENCRYPT_KEY);
+                if (validatePassword === false) {
+                    res.json({ message: "invalid password" });
+                } else {
+                    const tokenKey: any = process.env.JWTKEY;
+                    const token = jwt.sign(
+                        {
+                            _id: user._id,
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            email: user.email,
+                            avatar: user.avatar,
+                            genre: user.genre,
+                            username: user.username,
+                            encryptedPassword: user.password,
+                            password: password,
+                        },
+                        tokenKey
+                    );
+                    res.json({ message: "hi there!", token: token });
+
+
+                }
+
             } else {
-                const tokenKey: any = process.env.JWTKEY;
-                const token = jwt.sign(
-                    {
-                        _id: user._id,
-                        firstName: user.firstName,
-                        lastName: user.lastName,
-                        email: user.email,
-                        avatar: user.avatar,
-                        genre: user.genre,
-                        username: user.username,
-                        encryptedPassword: user.password,
-                        password: password,
-                    },
-                    tokenKey
-                );
-                res.json({ message: "hi there!", token: token });
-
-
+                res.json({ message: "invalid email" });
             }
-
-        } else {
-            res.json({ message: "invalid email" });
+        } catch (e) {
+            console.error(e);
+            res.json({ message: "an error was occurred" });
         }
 
     }
