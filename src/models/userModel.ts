@@ -6,11 +6,12 @@ export interface IUser extends Document {
   email: string;
   genre: string;
   avatar: string;
+  cloudinaryId: string;
   username: string;
   password: string;
 }
 
-const UserSchema: Schema = new Schema({
+const UserModel: Schema = new Schema({
   firstName: {
     type: String,
     required: true,
@@ -31,6 +32,10 @@ const UserSchema: Schema = new Schema({
     type: String,
     required: true,
   },
+  cloudinaryId: {
+    type: String,
+    default: ""
+  },
   username: {
     type: String,
     required: true,
@@ -42,4 +47,4 @@ const UserSchema: Schema = new Schema({
   },
 });
 
-export default mongoose.model<IUser>("User", UserSchema);
+export default mongoose.model<IUser>("User", UserModel);
