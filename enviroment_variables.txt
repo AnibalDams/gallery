@@ -1,0 +1,16 @@
+# Port in dev mode
+PORT=8080
+
+# MongoDb Url 
+MONGO_URI="mongodb Url. Local or via Mongodb atlas"
+
+# Cloudinary Config variables
+CLOUDINARY_CLOUD_NAME="your Cloudinary cloud name"
+CLOUDINARY_API_KEY="your Cloudinary api key"
+CLOUDINARY_API_SECRET="your Cloudinary api secret"
+
+# Key for Json Web Token
+JWTKEY="your jwt key"
+
+# Crypto key
+ENCRYPT_KEY="your key"
