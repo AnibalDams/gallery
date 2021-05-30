@@ -1,13 +1,11 @@
 // ==================== Imports ====================
 
-
 import dotenv from "dotenv";
-import express, { Express,NextFunction } from "express";
+import express, { Express} from "express";
 import indexRoutes from "./routes/index";
 import dbConnect from "./utils/dbConnect";
 import morgan from "morgan";
 import cloudinary from "cloudinary";
-
 import cors from "cors";
 
 // ==================== Initializations ====================
@@ -15,13 +13,13 @@ import cors from "cors";
 if (process.env.NODE_ENV !== "production") {
   dotenv.config();
 }
+const app:Express = express();
 const port = process.env.PORT || 4000;
-const app = express();
 const mongoUri: string | undefined = process.env.MONGO_URI;
 dbConnect(mongoUri);
 
 // ==================== Middlewares ====================
-
+// cors is allowed for all routes but you can restric the access
 app.use(cors());
 app.use(express.json());
 app.use(
